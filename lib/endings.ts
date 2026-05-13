@@ -7,12 +7,13 @@ import type {
 } from "./types";
 
 /**
- * Como o final é escolhido:
+ * Como o final é escolhido (ordem importa — vai do mais específico ao genérico):
  *
- * 1. Se a saúde chegou a 0 → "tragic" (game over precoce, prevalece sobre tudo).
- * 2. Se todos os stats > 70 → "fulfilled".
- * 3. Caso contrário, regras descendentes detectam o perfil dominante.
- * 4. Fallback: "mediocre".
+ * 1. Game over precoce (saúde ≤ 0 a meio do jogo) → "tragic".
+ * 2. Sobreviveu mas saúde devastada (< 20) → "tragic" também.
+ * 3. Todos os stats ≥ 65 → "fulfilled".
+ * 4. Demais regras detectam o perfil dominante por par de stats.
+ * 5. Fallback: "mediocre" — só quando o jogador realmente ficou no meio.
  */
 export function calculateEnding(
   stats: Stats,
@@ -20,27 +21,31 @@ export function calculateEnding(
   diedEarly: boolean,
 ): EndingType {
   if (diedEarly || stats.health <= 0) return "tragic";
+  // Sobreviveu mas colapsado — narrativa de arrependimento ainda se aplica.
+  if (stats.health < 20) return "tragic";
 
-  const all = (min: number) =>
+  const allAtLeast = (min: number) =>
     stats.health >= min &&
     stats.focus >= min &&
     stats.social >= min &&
     stats.money >= min;
 
-  if (all(70)) return "fulfilled";
+  // Vida realizada — thresholds um pouco mais permissivos pra alcance real.
+  if (allAtLeast(65)) return "fulfilled";
 
   // Rico mas sozinho: dinheiro + foco altos, social baixo.
-  if (stats.money >= 65 && stats.focus >= 60 && stats.social < 40)
+  if (stats.money >= 60 && stats.focus >= 55 && stats.social < 45)
     return "rich-lonely";
 
-  // Famoso mas vazio: social alto, saúde baixa (vida noturna / palco).
-  if (stats.social >= 70 && stats.health < 45) return "famous-empty";
+  // Famoso mas vazio: social alto, saúde baixa.
+  if (stats.social >= 65 && stats.health < 50) return "famous-empty";
 
-  // Solidão pura.
-  if (stats.social < 25) return "lonely";
+  // Solidão pura: praticamente sem vida social (verificado antes de broke
+  // porque o vazio das relações pesa mais que o bolso vazio narrativamente).
+  if (stats.social < 35) return "lonely";
 
-  // Pobreza extrema: dinheiro e foco no chão.
-  if (stats.money < 30 && stats.focus < 35) return "broke";
+  // Pobreza: dinheiro E foco baixos (foi pelo atalho a vida toda).
+  if (stats.money < 40 && stats.focus < 40) return "broke";
 
   return "mediocre";
 }

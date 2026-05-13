@@ -78,13 +78,15 @@ export default function EndingPage() {
           {top3.map((r) => (
             <li
               key={`${r.day}-${r.choiceId}`}
-              className="flex justify-between items-center text-[10px] md:text-xs pixel-border-soft p-2"
+              className="flex flex-col md:flex-row md:justify-between md:items-center gap-1 md:gap-2 text-[10px] md:text-xs pixel-border-soft p-2 leading-relaxed"
               style={{ background: "var(--color-pixel-wood-dark)" }}
             >
               <span>
                 Dia {r.day}: <strong>{r.label}</strong>
               </span>
-              <span className="opacity-80">{formatEffects(r.effects)}</span>
+              <span className="opacity-80 text-[9px] md:text-xs">
+                {formatEffects(r.effects)}
+              </span>
             </li>
           ))}
         </ul>
