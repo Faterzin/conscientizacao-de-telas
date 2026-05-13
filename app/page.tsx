@@ -18,8 +18,6 @@ export default function MenuPage() {
   const history = useGameStore((s) => s.history);
   const finished = useGameStore((s) => s.finished);
 
-  // Evita mismatch de hidratação: só renderizamos o que depende do save
-  // depois que o store rehidratou do localStorage.
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -27,68 +25,92 @@ export default function MenuPage() {
   const hasSave = mounted && hydrated && history.length > 0 && !finished;
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-4 py-10 gap-8">
-      <motion.h1
-        initial={{ opacity: 0, y: -16 }}
+    <main className="menu-bg min-h-screen flex flex-col items-center px-4 py-6">
+      {/* Logo "DailyQuiz" está desenhado dentro da imagem de fundo,
+          então o título textual fica só para leitores de tela. */}
+      <h1 className="sr-only">DailyQuiz</h1>
+
+      {/* Empurra o conteúdo pra metade-baixo da lousa, onde o fundo é
+          uniforme (verde) — fica longe do logo no topo e dos objetos
+          de canto (régua, tesoura, livro, lápis). */}
+      <div className="flex-1" aria-hidden="true" />
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-2xl md:text-4xl text-center leading-relaxed"
-        style={{ color: "var(--color-pixel-gold)" }}
+        transition={{ delay: 0.3 }}
+        className="flex flex-col items-center gap-6 max-w-md w-full"
       >
-        Daily<span style={{ color: "var(--color-pixel-cream)" }}>Quiz</span>
-      </motion.h1>
+        <p
+          className="text-[10px] md:text-xs text-center leading-relaxed"
+          style={{
+            color: "var(--color-pixel-cream)",
+            textShadow: "2px 2px 0 rgba(0,0,0,0.55)",
+          }}
+        >
+          Cada escolha do dia muda quem você se torna.
+          <br />
+          {TOTAL_DAYS} dias. Sua história. Suas consequências.
+        </p>
 
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="text-[10px] md:text-xs text-center max-w-md opacity-80 leading-relaxed"
-      >
-        Cada escolha do dia muda quem você se torna.
-        <br />
-        {TOTAL_DAYS} dias. Sua história. Suas consequências.
-      </motion.p>
-
-      {/* Escolha de personagem */}
-      <div className="flex flex-col items-center gap-3">
-        <span className="text-[10px] uppercase tracking-widest opacity-70">
-          Escolha o personagem
-        </span>
-        <div className="flex gap-3">
-          {(["boy", "girl"] as CharacterGender[]).map((g) => (
-            <button
-              key={g}
-              onClick={() => setGender(g)}
-              aria-pressed={gender === g}
-              className={`pixel-btn pixel-border-soft ${
-                gender === g ? "ring-2 ring-pixel-gold" : "opacity-70"
-              }`}
-              style={
-                gender === g
-                  ? { background: "var(--color-pixel-gold)", color: "var(--color-pixel-ink)" }
-                  : undefined
-              }
-            >
-              {g === "boy" ? "Menino" : "Menina"}
-            </button>
-          ))}
+        {/* Escolha de personagem */}
+        <div className="flex flex-col items-center gap-2">
+          <span
+            className="text-[9px] uppercase tracking-widest"
+            style={{
+              color: "var(--color-pixel-cream)",
+              textShadow: "1px 1px 0 rgba(0,0,0,0.6)",
+            }}
+          >
+            Escolha o personagem
+          </span>
+          <div className="flex gap-3">
+            {(["boy", "girl"] as CharacterGender[]).map((g) => (
+              <button
+                key={g}
+                onClick={() => setGender(g)}
+                aria-pressed={gender === g}
+                className={`pixel-btn pixel-border-soft ${
+                  gender === g ? "ring-2 ring-pixel-gold" : "opacity-80"
+                }`}
+                style={
+                  gender === g
+                    ? {
+                        background: "var(--color-pixel-gold)",
+                        color: "var(--color-pixel-ink)",
+                      }
+                    : undefined
+                }
+              >
+                {g === "boy" ? "Menino" : "Menina"}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div className="flex flex-col gap-3 items-center mt-2">
-        <Link href="/game" onClick={() => startNewGame(gender)}>
-          <PixelButton>Começar</PixelButton>
-        </Link>
-
-        {hasSave && (
-          <Link href="/game">
-            <PixelButton variant="ghost">
-              Continuar (dia {day})
-            </PixelButton>
+        <div className="flex flex-col gap-3 items-center">
+          <Link href="/game" onClick={() => startNewGame(gender)}>
+            <PixelButton>Começar</PixelButton>
           </Link>
-        )}
-      </div>
 
-      <footer className="mt-12 text-[8px] opacity-50 text-center max-w-md leading-relaxed">
+          {hasSave && (
+            <Link href="/game">
+              <PixelButton variant="ghost">Continuar (dia {day})</PixelButton>
+            </Link>
+          )}
+        </div>
+      </motion.div>
+
+      <div className="flex-1" aria-hidden="true" />
+
+      <footer
+        className="text-[8px] text-center max-w-md leading-relaxed pb-2"
+        style={{
+          color: "var(--color-pixel-cream)",
+          textShadow: "1px 1px 0 rgba(0,0,0,0.55)",
+          opacity: 0.75,
+        }}
+      >
         Um jogo pra refletir. Suas decisões somam — ou subtraem — saúde, foco,
         social e finanças.
       </footer>

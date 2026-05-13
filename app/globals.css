@@ -130,3 +130,20 @@ body {
   outline: 3px solid var(--color-pixel-gold);
   outline-offset: 2px;
 }
+
+/* Fundo de lousa do menu — versão mobile (portrait) por padrão,
+   troca pra landscape no breakpoint md. As imagens já trazem o logo
+   "DailyQuiz" escrito a giz, então o <h1> textual fica sr-only. */
+.menu-bg {
+  background-image: url("/bg/menu-mobile.png");
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-color: #1d2840;
+}
+@media (min-width: 768px) {
+  .menu-bg {
+    background-image: url("/bg/menu-desktop.png");
+    background-position: center center;
+  }
+}
