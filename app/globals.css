@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+/* Paleta retrô / terrosa inspirada em Stardew Valley */
+@theme {
+  --color-pixel-sky: #88c0d0;
+  --color-pixel-grass: #5b8a3a;
+  --color-pixel-grass-dark: #3d5e25;
+  --color-pixel-earth: #8c6b3f;
+  --color-pixel-earth-dark: #5a4424;
+  --color-pixel-wood: #a87246;
+  --color-pixel-wood-dark: #6e4626;
+  --color-pixel-cream: #f1e0bb;
+  --color-pixel-paper: #efe1c0;
+  --color-pixel-ink: #2a1b0e;
+  --color-pixel-rose: #d96b6b;
+  --color-pixel-gold: #e7b94d;
+  --color-pixel-leaf: #7fb069;
+  --color-pixel-night: #1d2840;
+
+  /* Stats */
+  --color-stat-health: #d96b6b;
+  --color-stat-focus: #6b8fd9;
+  --color-stat-social: #e7b94d;
+  --color-stat-money: #7fb069;
+
+  --font-pixel: "Press Start 2P", "VT323", monospace;
+}
+
+html,
+body {
+  background: var(--color-pixel-night);
+  color: var(--color-pixel-cream);
+  font-family: var(--font-pixel);
+  image-rendering: pixelated;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Borda pixelada usando box-shadow stepwise (sem SVG, sem PNG) */
+.pixel-border {
+  box-shadow:
+    0 -4px 0 0 var(--color-pixel-ink),
+    0 4px 0 0 var(--color-pixel-ink),
+    -4px 0 0 0 var(--color-pixel-ink),
+    4px 0 0 0 var(--color-pixel-ink),
+    inset 0 0 0 2px var(--color-pixel-wood-dark);
+}
+
+.pixel-border-soft {
+  box-shadow:
+    0 -3px 0 0 var(--color-pixel-ink),
+    0 3px 0 0 var(--color-pixel-ink),
+    -3px 0 0 0 var(--color-pixel-ink),
+    3px 0 0 0 var(--color-pixel-ink);
+}
+
+/* Botão pixel art com sombra dura tipo NES */
+.pixel-btn {
+  position: relative;
+  background: var(--color-pixel-wood);
+  color: var(--color-pixel-cream);
+  padding: 0.75rem 1.25rem;
+  font-family: var(--font-pixel);
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  transition: transform 80ms steps(2), background-color 80ms steps(2);
+  cursor: pointer;
+}
+.pixel-btn:hover:not(:disabled) {
+  background: var(--color-pixel-gold);
+  color: var(--color-pixel-ink);
+  transform: translateY(-2px);
+}
+.pixel-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.pixel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pixel-btn-ghost {
+  background: transparent;
+  color: var(--color-pixel-cream);
+}
+.pixel-btn-ghost:hover:not(:disabled) {
+  background: var(--color-pixel-wood-dark);
+  color: var(--color-pixel-cream);
+}
+
+/* Scanline sutil para clima retrô */
+.scanlines {
+  position: relative;
+}
+.scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.06) 0px,
+    rgba(0, 0, 0, 0.06) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: multiply;
+}
+
+/* Animação shake usada ao receber dano */
+@keyframes pixel-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-2px); }
+  40% { transform: translateX(2px); }
+  60% { transform: translateX(-1px); }
+  80% { transform: translateX(1px); }
+}
+.animate-shake { animation: pixel-shake 220ms steps(4); }
+
+/* Pisca para destaque de delta */
+@keyframes pixel-pop {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-24px) scale(1.1); opacity: 0; }
+}
+.animate-pop { animation: pixel-pop 700ms steps(8) forwards; }
+
+/* Foco visível para acessibilidade */
+*:focus-visible {
+  outline: 3px solid var(--color-pixel-gold);
+  outline-offset: 2px;
+}
